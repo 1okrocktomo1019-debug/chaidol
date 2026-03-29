@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>チャイドル - 子ども服バーチャル試着</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-inner">
+      <p class="header-logo">AI Virtual Try-On</p>
+      <h1 class="header-title">チャイドル</h1>
+      <div class="header-rule"></div>
+      <p class="header-subtitle">お子さまに、夢のコーディネートを</p>
+      <span class="header-badge">Powered by FASHN AI</span>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- STEP 1: 写真アップロード -->
+    <section class="card" id="step-upload">
+      <div class="step-badge">STEP 1</div>
+      <h2 class="card-title">子どもの写真をアップロード</h2>
+      <p class="card-desc">全身が写った写真が一番きれいに仕上がります</p>
+
+      <label class="upload-area" id="upload-label" for="person-input">
+        <div id="upload-placeholder">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">タップして写真を選ぶ</div>
+          <div class="upload-hint">JPG / PNG / HEIC 対応</div>
+        </div>
+        <img id="preview-img" class="preview-img hidden" alt="プレビュー" />
+        <input type="file" id="person-input" accept="image/*" class="hidden" />
+      </label>
+
+      <button class="btn btn-secondary" id="change-photo-btn" style="display:none;">
+        写真を変更する
+      </button>
+    </section>
+
+    <!-- STEP 2: 服を選ぶ -->
+    <section class="card" id="step-search">
+      <div class="step-badge">STEP 2</div>
+      <h2 class="card-title">服を選ぶ</h2>
+
+      <!-- 服の画像アップロード -->
+      <div class="url-input-area">
+        <p class="url-label">📂 服の画像をアップロードして試着（GAPやZARAなどの商品画像を保存してアップ）</p>
+        <div class="sample-hint">
+          <img class="sample-img" src="/static/images/sample-garment.png" alt="服のサンプル画像" />
+          <div class="sample-hint-text">
+            <span class="sample-hint-label">例</span>
+            このような服の画像を<br>1枚アップしてください
+          </div>
+        </div>
+        <label class="garment-upload-label" id="garment-label" for="garment-input">
+          <div id="garment-placeholder">
+            <span>👗 服の画像を選ぶ</span>
+          </div>
+          <img id="garment-preview" class="garment-preview hidden" alt="服のプレビュー" />
+          <input type="file" id="garment-input" accept="image/*" class="hidden" />
+        </label>
+        <button class="btn btn-primary" id="garment-try-btn" style="display:none;">
+          ✨ この服で試着する
+        </button>
+
+      </div>
+
+      <div class="divider">または楽天市場から探す</div>
+
+      <div class="search-row">
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="例：ロンパース、ワンピース、男の子"
+          value=""
+        />
+        <button class="btn btn-primary" id="search-btn">検索</button>
+      </div>
+
+      <div id="search-loading" class="loading hidden">
+        <div class="spinner"></div>
+        <span>楽天市場で検索中...</span>
+      </div>
+
+      <div id="items-grid" class="items-grid"></div>
+
+      <button class="btn btn-outline" id="load-more-btn" style="display:none;">
+        もっと見る
+      </button>
+
+      <div id="image-picker" style="display:none;">
+        <p style="margin:12px 0 8px;font-size:14px;color:#666;">試着に使う画像を選んでください：</p>
+        <div id="image-picker-grid" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      </div>
+
+      <button class="btn btn-primary" id="generate-btn" style="display:none;">
+        ✨ 試着する
+      </button>
+    </section>
+
+    <!-- STEP 3: 試着結果 -->
+    <section class="card hidden" id="step-result">
+      <div class="step-badge">STEP 3</div>
+      <h2 class="card-title">試着してみよう！</h2>
+
+      <div id="tryon-loading" class="loading hidden">
+        <div class="spinner"></div>
+        <span>試着画像を生成中... （30〜60秒かかります）</span>
+      </div>
+
+      <div id="result-area" class="result-area hidden">
+        <img id="result-img" class="result-img" alt="試着結果" />
+
+        <div id="selected-item-info" class="selected-item-info">
+          <p id="selected-item-name" class="item-name-result"></p>
+          <p id="selected-item-price" class="item-price-result"></p>
+          <a id="buy-link" class="btn btn-buy" target="_blank" rel="noopener noreferrer">
+            🛍️ 楽天市場で購入する
+          </a>
+        </div>
+
+        <button class="btn btn-secondary" id="retry-btn">
+          別の服を選ぶ
+        </button>
+      </div>
+
+      <div id="result-error" class="error-msg hidden"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>試着画像はイメージです。実際の商品と異なる場合があります。</p>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
