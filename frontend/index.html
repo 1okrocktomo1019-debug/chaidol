@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>チャイドル - 子ども服バーチャル試着</title>
+  <title>Chaidol - 子ども服バーチャル試着</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -11,11 +11,96 @@
 </head>
 <body>
 
+  <!-- ─── スプラッシュ画面 ─────────────────────────── -->
+  <div id="splash" class="splash">
+    <div class="splash-particles">
+      <span class="sp-dot"></span>
+      <span class="sp-dot"></span>
+      <span class="sp-dot"></span>
+      <span class="sp-dot"></span>
+      <span class="sp-dot"></span>
+      <span class="sp-dot"></span>
+    </div>
+    <div class="splash-inner">
+      <p class="splash-logo">AI Virtual Try-On</p>
+      <h1 class="splash-title">Chaidol</h1>
+      <div class="splash-rule"></div>
+      <p class="splash-tagline">お子さまに、夢のコーディネートを</p>
+      <button class="splash-start-btn" id="splash-btn">
+        <span>はじめる</span>
+        <span class="splash-btn-arrow">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── 使い方ガイド ──────────────────────────────── -->
+  <div id="howto" class="howto hidden">
+    <div class="howto-inner">
+      <p class="howto-label">How to use</p>
+      <h2 class="howto-title">3ステップで試着完了</h2>
+      <div class="howto-rule"></div>
+
+      <div class="howto-steps">
+
+        <div class="howto-step">
+          <div class="howto-step-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="14" width="48" height="38" rx="6" fill="#F7DDE9" stroke="#C2447A" stroke-width="2"/>
+              <circle cx="32" cy="33" r="11" fill="#DFA0BA" opacity="0.5"/>
+              <circle cx="32" cy="33" r="7" fill="#C2447A" opacity="0.7"/>
+              <circle cx="44" cy="20" r="4" fill="#C2447A"/>
+              <circle cx="44" cy="20" r="2" fill="white"/>
+            </svg>
+          </div>
+          <div class="howto-step-num">01</div>
+          <p class="howto-step-title">写真をアップ</p>
+          <p class="howto-step-desc">子どもの全身写真を<br>1枚選ぶだけ</p>
+        </div>
+
+        <div class="howto-arrow">→</div>
+
+        <div class="howto-step">
+          <div class="howto-step-icon">
+            <img src="/static/images/howto-shirt.png" alt="服を選ぶ" style="width:100%;height:100%;object-fit:contain;" />
+          </div>
+          <div class="howto-step-num">02</div>
+          <p class="howto-step-title">服を選ぶ</p>
+          <p class="howto-step-desc">画像をアップするか<br>楽天市場から検索</p>
+        </div>
+
+        <div class="howto-arrow">→</div>
+
+        <div class="howto-step">
+          <div class="howto-step-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="6" width="30" height="52" rx="5" fill="#F7DDE9" stroke="#C2447A" stroke-width="2"/>
+              <rect x="12" y="10" width="22" height="30" rx="3" fill="#DFA0BA" opacity="0.4"/>
+              <path d="M14 24 Q23 18 30 24 Q23 30 14 24Z" fill="#C2447A" opacity="0.6"/>
+              <circle cx="44" cy="44" r="14" fill="#C4965A"/>
+              <path d="M38 44 L42 48 L51 39" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="howto-step-num">03</div>
+          <p class="howto-step-title">試着完了！</p>
+          <p class="howto-step-desc">AIが30〜60秒で<br>試着画像を生成</p>
+        </div>
+
+      </div>
+
+      <button class="howto-start-btn" id="howto-btn">
+        <span>さっそく使う</span>
+        <span class="howto-btn-arrow">✨</span>
+      </button>
+
+      <p class="howto-note">無料でお試しいただけます</p>
+    </div>
+  </div>
+
   <!-- ヘッダー -->
   <header class="header">
     <div class="header-inner">
       <p class="header-logo">AI Virtual Try-On</p>
-      <h1 class="header-title">チャイドル</h1>
+      <h1 class="header-title">Chaidol</h1>
       <div class="header-rule"></div>
       <p class="header-subtitle">お子さまに、夢のコーディネートを</p>
       <span class="header-badge">Powered by FASHN AI</span>
@@ -57,7 +142,7 @@
           <img class="sample-img" src="/static/images/sample-garment.png" alt="服のサンプル画像" />
           <div class="sample-hint-text">
             <span class="sample-hint-label">例</span>
-            このような服の画像を<br>1枚アップしてください
+            このような服単体の画像を<br>一枚選んでください
           </div>
         </div>
         <label class="garment-upload-label" id="garment-label" for="garment-input">
@@ -67,10 +152,11 @@
           <img id="garment-preview" class="garment-preview hidden" alt="服のプレビュー" />
           <input type="file" id="garment-input" accept="image/*" class="hidden" />
         </label>
-        <button class="btn btn-primary" id="garment-try-btn" style="display:none;">
-          ✨ この服で試着する
-        </button>
-
+        <div style="display:flex;justify-content:center;">
+          <button class="btn btn-try" id="garment-try-btn" style="display:none;">
+            ✨ この服で試着する
+          </button>
+        </div>
       </div>
 
       <div class="divider">または楽天市場から探す</div>
@@ -98,27 +184,47 @@
       </button>
 
       <div id="image-picker" style="display:none;">
-        <p style="margin:12px 0 8px;font-size:14px;color:#666;">試着に使う画像を選んでください：</p>
+        <div class="sample-hint" style="margin:12px 0 10px;">
+          <img class="sample-img" src="/static/images/sample-garment.png" alt="服のサンプル画像" />
+          <div class="sample-hint-text">
+            <span class="sample-hint-label">例</span>
+            このような服単体の画像を<br>一枚選んでください
+          </div>
+        </div>
         <div id="image-picker-grid" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
       </div>
 
-      <button class="btn btn-primary" id="generate-btn" style="display:none;">
-        ✨ 試着する
-      </button>
+      <div class="try-btn-wrap hidden" id="try-btn-wrap">
+        <button class="btn btn-try" id="generate-btn">
+          ✨ 試着する
+        </button>
+      </div>
     </section>
 
     <!-- STEP 3: 試着結果 -->
     <section class="card hidden" id="step-result">
       <div class="step-badge">STEP 3</div>
-      <h2 class="card-title">試着してみよう！</h2>
+      <h2 class="card-title" id="result-card-title">試着してみよう！</h2>
 
-      <div id="tryon-loading" class="loading hidden">
-        <div class="spinner"></div>
-        <span>試着画像を生成中... （30〜60秒かかります）</span>
+      <!-- ローディング -->
+      <div id="tryon-loading" class="tryon-loading-wrap hidden">
+        <div class="tryon-loading-anim">
+          <div class="tl-ring"></div>
+          <div class="tl-icon">👗</div>
+        </div>
+        <p class="tl-msg" id="tl-msg">AIが服を認識中...</p>
+        <div class="tl-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <p class="tl-sub">30〜60秒ほどお待ちください</p>
       </div>
 
+      <!-- 結果 -->
       <div id="result-area" class="result-area hidden">
-        <img id="result-img" class="result-img" alt="試着結果" />
+        <div class="result-reveal-badge">✨ 試着完了！</div>
+        <div class="result-img-container">
+          <img id="result-img" class="result-img" alt="試着結果" />
+        </div>
 
         <div id="selected-item-info" class="selected-item-info">
           <p id="selected-item-name" class="item-name-result"></p>

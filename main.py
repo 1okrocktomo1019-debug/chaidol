@@ -100,12 +100,30 @@ async def search_clothes(
     items = []
     for entry in data.get("Items", []):
         item = entry.get("Item", entry)
-        medium_images = item.get("mediumImageUrls", [])
+        def extract_urls(field):
+            return [
+                (img.get("imageUrl") if isinstance(img, dict) else img)
+                for img in item.get(field, [])
+                if (img.get("imageUrl") if isinstance(img, dict) else img)
+            ]
+
+        medium_urls = extract_urls("mediumImageUrls")
+        small_urls  = extract_urls("smallImageUrls")
+
+        # ベースURL（クエリなし）で重複排除し、smallをmediumサイズに昇格して最大6枚
+        seen = set()
         image_urls = []
-        for img in medium_images:
-            url = img.get("imageUrl") if isinstance(img, dict) else img
-            if url:
+        for url in medium_urls:
+            base = url.split("?")[0]
+            if base not in seen:
+                seen.add(base)
                 image_urls.append(url)
+        for url in small_urls:
+            base = url.split("?")[0]
+            if base not in seen and len(image_urls) < 6:
+                seen.add(base)
+                # サイズパラメータをmediumに統一
+                image_urls.append(base + "?_ex=128x128")
         items.append({
             "itemCode": item.get("itemCode"),
             "itemName": item.get("itemName"),

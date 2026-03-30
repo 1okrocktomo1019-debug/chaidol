@@ -1,5 +1,5 @@
 /**
- * チャイドル - フロントエンドロジック
+ * Chaidol - フロントエンドロジック
  */
 
 // ─── 状態管理 ──────────────────────────────────────
@@ -13,34 +13,115 @@ const state = {
 };
 
 // ─── DOM要素 ───────────────────────────────────────
-const personInput       = document.getElementById("person-input");
-const uploadPlaceholder = document.getElementById("upload-placeholder");
-const previewImg        = document.getElementById("preview-img");
-const changePhotoBtn    = document.getElementById("change-photo-btn");
+const personInput        = document.getElementById("person-input");
+const uploadPlaceholder  = document.getElementById("upload-placeholder");
+const previewImg         = document.getElementById("preview-img");
+const changePhotoBtn     = document.getElementById("change-photo-btn");
 
-const garmentInput      = document.getElementById("garment-input");
-const garmentPreview    = document.getElementById("garment-preview");
+const garmentInput       = document.getElementById("garment-input");
+const garmentPreview     = document.getElementById("garment-preview");
 const garmentPlaceholder = document.getElementById("garment-placeholder");
-const garmentTryBtn     = document.getElementById("garment-try-btn");
+const garmentTryBtn      = document.getElementById("garment-try-btn");
 
-const searchInput       = document.getElementById("search-input");
-const searchBtn         = document.getElementById("search-btn");
-const searchLoading     = document.getElementById("search-loading");
-const itemsGrid         = document.getElementById("items-grid");
-const loadMoreBtn       = document.getElementById("load-more-btn");
-const generateBtn       = document.getElementById("generate-btn");
-const imagePicker       = document.getElementById("image-picker");
-const imagePickerGrid   = document.getElementById("image-picker-grid");
+const searchInput        = document.getElementById("search-input");
+const searchBtn          = document.getElementById("search-btn");
+const searchLoading      = document.getElementById("search-loading");
+const itemsGrid          = document.getElementById("items-grid");
+const loadMoreBtn        = document.getElementById("load-more-btn");
+const generateBtn        = document.getElementById("generate-btn");
+const imagePicker        = document.getElementById("image-picker");
+const imagePickerGrid    = document.getElementById("image-picker-grid");
 
-const stepResult        = document.getElementById("step-result");
-const tryonLoading      = document.getElementById("tryon-loading");
-const resultArea        = document.getElementById("result-area");
-const resultImg         = document.getElementById("result-img");
-const resultError       = document.getElementById("result-error");
-const selectedItemName  = document.getElementById("selected-item-name");
-const selectedItemPrice = document.getElementById("selected-item-price");
-const buyLink           = document.getElementById("buy-link");
-const retryBtn          = document.getElementById("retry-btn");
+const tryBtnWrap         = document.getElementById("try-btn-wrap");
+const stepResult         = document.getElementById("step-result");
+const tryonLoading       = document.getElementById("tryon-loading");
+const resultArea         = document.getElementById("result-area");
+const resultImg          = document.getElementById("result-img");
+const resultError        = document.getElementById("result-error");
+const resultCardTitle    = document.getElementById("result-card-title");
+const selectedItemName   = document.getElementById("selected-item-name");
+const selectedItemPrice  = document.getElementById("selected-item-price");
+const buyLink            = document.getElementById("buy-link");
+const retryBtn           = document.getElementById("retry-btn");
+
+// ─── スプラッシュ画面 ──────────────────────────────
+document.getElementById("splash-btn").addEventListener("click", () => {
+  const splash = document.getElementById("splash");
+  const howto  = document.getElementById("howto");
+  splash.classList.add("fade-out");
+  setTimeout(() => {
+    splash.remove();
+    howto.classList.remove("hidden");
+  }, 650);
+});
+
+// ─── 使い方ガイド ──────────────────────────────────
+document.getElementById("howto-btn").addEventListener("click", () => {
+  const howto = document.getElementById("howto");
+  howto.classList.add("fade-out");
+  setTimeout(() => howto.remove(), 650);
+});
+
+// ─── ローディングメッセージ ────────────────────────
+const loadingMessages = [
+  "AIが服を認識中...",
+  "お子さまの体型を分析中...",
+  "バーチャル試着を生成中...",
+  "画像を仕上げています...",
+];
+let loadingMsgTimer = null;
+
+function startLoadingMessages() {
+  const el = document.getElementById("tl-msg");
+  let idx = 0;
+  el.textContent = loadingMessages[0];
+  el.style.opacity = "1";
+  loadingMsgTimer = setInterval(() => {
+    el.style.opacity = "0";
+    setTimeout(() => {
+      idx = (idx + 1) % loadingMessages.length;
+      el.textContent = loadingMessages[idx];
+      el.style.opacity = "1";
+    }, 350);
+  }, 3800);
+}
+
+function stopLoadingMessages() {
+  clearInterval(loadingMsgTimer);
+  loadingMsgTimer = null;
+}
+
+// ─── コンフェッティ ────────────────────────────────
+function launchConfetti() {
+  const colors = ["#C2447A", "#7B4FA0", "#C4965A", "#DDB882", "#DFA0BA", "#B589C9"];
+  for (let i = 0; i < 36; i++) {
+    const el = document.createElement("div");
+    const size = Math.random() * 8 + 4;
+    el.style.cssText = `
+      position: fixed;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      border-radius: ${Math.random() > 0.5 ? "50%" : "2px"};
+      left: ${20 + Math.random() * 60}vw;
+      top: 55vh;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 1;
+    `;
+    document.body.appendChild(el);
+    const angle = (Math.random() - 0.5) * 200;
+    const dist  = Math.random() * 180 + 80;
+    el.animate([
+      { transform: "translateY(0) rotate(0deg)", opacity: 1 },
+      { transform: `translate(${Math.sin(angle * Math.PI / 180) * dist}px, -${dist * 1.6}px) rotate(${angle * 2}deg)`, opacity: 0 }
+    ], {
+      duration: Math.random() * 700 + 500,
+      easing: "cubic-bezier(0, 0.9, 0.57, 1)",
+      fill: "forwards"
+    }).onfinish = () => el.remove();
+  }
+}
 
 // ─── 写真アップロード ──────────────────────────────
 personInput.addEventListener("change", (e) => {
@@ -78,7 +159,7 @@ garmentInput.addEventListener("change", (e) => {
     garmentPreview.src = ev.target.result;
     garmentPreview.classList.remove("hidden");
     garmentPlaceholder.classList.add("hidden");
-    garmentTryBtn.style.display = "block";
+    garmentTryBtn.style.display = "inline-flex";
   };
   reader.readAsDataURL(file);
 });
@@ -206,8 +287,24 @@ function selectItem(item, cardEl) {
     imagePicker.style.display = "none";
   }
 
-  generateBtn.style.display = "block";
-  generateBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  tryBtnWrap.classList.remove("hidden");
+  tryBtnWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+// ─── ローディング表示ヘルパー ──────────────────────
+function showTryonLoading() {
+  resultCardTitle.textContent = "試着中...";
+  stepResult.classList.remove("hidden");
+  stepResult.scrollIntoView({ behavior: "smooth", block: "start" });
+  tryonLoading.classList.remove("hidden");
+  resultArea.classList.add("hidden");
+  resultError.classList.add("hidden");
+  startLoadingMessages();
+}
+
+function hideTryonLoading() {
+  tryonLoading.classList.add("hidden");
+  stopLoadingMessages();
 }
 
 // ─── 服ファイルで試着 ──────────────────────────────
@@ -215,11 +312,7 @@ async function startTryOnWithFile(garmentFile) {
   if (state.isTryingOn) return;
   state.isTryingOn = true;
 
-  stepResult.classList.remove("hidden");
-  stepResult.scrollIntoView({ behavior: "smooth", block: "start" });
-  tryonLoading.classList.remove("hidden");
-  resultArea.classList.add("hidden");
-  resultError.classList.add("hidden");
+  showTryonLoading();
 
   try {
     const formData = new FormData();
@@ -232,14 +325,18 @@ async function startTryOnWithFile(garmentFile) {
       throw new Error(err.detail || "試着画像の生成に失敗しました");
     }
     const data = await res.json();
+
+    hideTryonLoading();
     resultImg.src = data.result_url;
     selectedItemName.textContent = "";
     selectedItemPrice.textContent = "";
     buyLink.style.display = "none";
-    tryonLoading.classList.add("hidden");
+    resultCardTitle.textContent = "試着してみよう！";
     resultArea.classList.remove("hidden");
+    launchConfetti();
   } catch (err) {
-    tryonLoading.classList.add("hidden");
+    hideTryonLoading();
+    resultCardTitle.textContent = "試着してみよう！";
     showError(resultError, `エラーが発生しました: ${err.message}`);
   } finally {
     state.isTryingOn = false;
@@ -251,11 +348,7 @@ async function startTryOn(item) {
   if (state.isTryingOn) return;
   state.isTryingOn = true;
 
-  stepResult.classList.remove("hidden");
-  stepResult.scrollIntoView({ behavior: "smooth", block: "start" });
-  tryonLoading.classList.remove("hidden");
-  resultArea.classList.add("hidden");
-  resultError.classList.add("hidden");
+  showTryonLoading();
 
   try {
     const formData = new FormData();
@@ -270,16 +363,19 @@ async function startTryOn(item) {
     }
 
     const data = await res.json();
+
+    hideTryonLoading();
     resultImg.src = data.result_url;
     selectedItemName.textContent = item.itemName || "";
     selectedItemPrice.textContent = item.itemPrice ? `¥${item.itemPrice.toLocaleString()}` : "";
     buyLink.href = item.itemUrl || "#";
     buyLink.style.display = item.itemUrl && item.itemUrl !== item.imageUrl ? "block" : "none";
-
-    tryonLoading.classList.add("hidden");
+    resultCardTitle.textContent = "試着してみよう！";
     resultArea.classList.remove("hidden");
+    launchConfetti();
   } catch (err) {
-    tryonLoading.classList.add("hidden");
+    hideTryonLoading();
+    resultCardTitle.textContent = "試着してみよう！";
     showError(resultError, `エラーが発生しました: ${err.message}`);
   } finally {
     state.isTryingOn = false;
@@ -303,6 +399,7 @@ generateBtn.addEventListener("click", () => {
 retryBtn.addEventListener("click", () => {
   state.selectedItem = null;
   document.querySelectorAll(".item-card.selected").forEach((el) => el.classList.remove("selected"));
+  tryBtnWrap.classList.add("hidden");
   stepResult.classList.add("hidden");
   resultArea.classList.add("hidden");
   resultError.classList.add("hidden");
