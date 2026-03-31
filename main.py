@@ -177,6 +177,32 @@ async def image_upload_to_base64(upload: UploadFile) -> str:
     return f"data:image/jpeg;base64,{b64}"
 
 
+async def url_to_base64_min128(url: str) -> str:
+    """URLから画像を取得し、128x128以上に保証してbase64で返す"""
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            r = await client.get(url)
+            r.raise_for_status()
+            image_bytes = r.content
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=502, detail=f"商品画像の取得に失敗しました: {str(e)}")
+    try:
+        img = Image.open(io.BytesIO(image_bytes))
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+        w, h = img.size
+        if w < 128 or h < 128:
+            new_w = max(w, 128)
+            new_h = max(h, 128)
+            img = img.resize((new_w, new_h), Image.LANCZOS)
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=90)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"商品画像の処理に失敗しました: {str(e)}")
+    b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+    return f"data:image/jpeg;base64,{b64}"
+
+
 async def run_fashn_tryon(model_image_data: str, garment_image_data: str) -> str:
     """FASHN.aiに試着リクエストを投げて結果URLを返す"""
     if not FASHN_API_KEY:
@@ -337,7 +363,8 @@ async def try_on(
     garment_url: str = Query(...),
 ):
     person_data = await image_upload_to_base64(person_image)
-    result_url = await run_fashn_tryon(person_data, garment_url)
+    garment_data = await url_to_base64_min128(garment_url)
+    result_url = await run_fashn_tryon(person_data, garment_data)
     return {"result_url": result_url}
 
 
