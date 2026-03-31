@@ -319,7 +319,7 @@ async function startTryOnWithFile(garmentFile) {
     formData.append("person_image", state.personImageFile);
     formData.append("garment_image", garmentFile);
 
-    const res = await fetch("/api/try-on-leffa", { method: "POST", body: formData });
+    const res = await fetch("/api/try-on-file", { method: "POST", body: formData });
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: "試着画像の生成に失敗しました" }));
       throw new Error(err.detail || "試着画像の生成に失敗しました");
